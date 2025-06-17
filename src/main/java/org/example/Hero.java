@@ -45,7 +45,7 @@ public class Hero extends JPanel {
     }
 
     public void walk() {
-        // если уже запущена walk-анимация, не запускаем снова
+
         movingOnScreen = true;
         if (running && path.equals("/Girl_2/Walk.png")) return;
         stopAnimation();
@@ -55,8 +55,8 @@ public class Hero extends JPanel {
 
         animationThread = new Thread(() -> {
             while (running) {
-                moveRight(1450);           // анимация (спрайт)
-                moveOnScreenRight(600);    // движение по экрану
+                moveRight(1450);
+                moveOnScreenRight(600);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
