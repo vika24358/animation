@@ -207,7 +207,6 @@ public class Hero extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         BufferedImage fullImage;
-
         Image croppedImage;
         try {
             fullImage = ImageIO.read(Objects.requireNonNull(
@@ -224,7 +223,7 @@ public class Hero extends JPanel {
 
         int drawY = (getHeight() - croppedImage.getHeight(null)) / 2;
 
-            g.drawImage(croppedImage, posX, drawY, null);
-
+        g.drawImage(croppedImage, 0, drawY, null);
     }
+
 }
