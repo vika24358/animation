@@ -1,6 +1,8 @@
 package org.example;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -17,11 +19,9 @@ public class UI extends JFrame implements KeyListener {
 
         container.setPreferredSize(getSize());
 
-        // Размеры компонентов должны быть достаточными для рисования
         hero.setBounds(100, 400, 90, 150);
         zombie.setBounds(500, 400, 200, 150);
 
-        // Важное: чтобы панели не перекрывались белым фоном
         hero.setOpaque(false);
         zombie.setOpaque(false);
 
@@ -36,6 +36,12 @@ public class UI extends JFrame implements KeyListener {
 
         hero.idle();
         zombie.idle();
+
+        JButton settingsButton = new JButton("Settings");
+
+        settingsButton.addActionListener(e -> new Settings(this));
+        container.add(settingsButton);
+        settingsButton.setBounds(650, 10, 100, 30);
 
         setVisible(true);
     }
