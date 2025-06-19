@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class Hero extends JPanel {
-    private Image croppedImage;
     private String path = "/Girl_2/Idle.png";
     private Thread animationThread;
     public volatile boolean running = false;
     public boolean movingOnScreen = false;
     private int posX = 100;
+    public int frameCount;
 
     private int xStep = 128;
     private int x = 25;
@@ -38,6 +38,7 @@ public class Hero extends JPanel {
 
     public void moveRight(int limit){
         x += xStep;
+        frameCount ++;
         if (x > limit) {
             x = 25;
         }
@@ -45,7 +46,6 @@ public class Hero extends JPanel {
     }
 
     public void walk() {
-
         movingOnScreen = true;
         if (running && path.equals("/Girl_2/Walk.png")) return;
         stopAnimation();
@@ -73,8 +73,46 @@ public class Hero extends JPanel {
         repaint();
     }
 
+    public void moveOnScreenLeft (){
+        posX -= 10;
+        if (posX < 0) posX = 0;
+        repaint();
+    }
+
+    public void walkLeft (){
+        movingOnScreen = true;
+        if (running && path.equals("/Girl_2/WalkLeft.png")) return;
+        stopAnimation();
+        path = "/Girl_2/WalkLeft.png";
+        x = 1435;
+        running = true;
+
+        animationThread = new Thread(() -> {
+            while (running) {
+                moveLeft();
+                moveOnScreenLeft();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        });
+        animationThread.start();
+    }
+
+    private void moveLeft() {
+        x -= xStep;
+        frameCount++;
+        if (x < 0) {
+            x = 1435;
+        }
+        repaint();
+    }
+
 
     public void attack() {
+        frameCount = 0;
         movingOnScreen = false;
         stopAnimation();
         path = "/Girl_2/Attack.png";
@@ -84,6 +122,9 @@ public class Hero extends JPanel {
         animationThread = new Thread(() -> {
             while (running) {
                 moveRight(1070);
+                if (frameCount > 9){
+                    stopAnimation();
+                }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -116,6 +157,7 @@ public class Hero extends JPanel {
 
     public void protection(){
         movingOnScreen = false;
+        frameCount = 0;
         stopAnimation();
         path = "/Girl_2/Protection.png";
         x = 25;
@@ -124,6 +166,9 @@ public class Hero extends JPanel {
         animationThread = new Thread(() -> {
             while (running) {
                 moveRight(175);
+                if (frameCount > 2){
+                    stopAnimation();
+                }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -137,6 +182,7 @@ public class Hero extends JPanel {
     public void dialogue(){
         movingOnScreen = false;
         stopAnimation();
+        frameCount = 0;
         path = "/Girl_2/Dialogue.png";
         x = 25;
         running = true;
@@ -144,6 +190,9 @@ public class Hero extends JPanel {
         animationThread = new Thread(() -> {
             while (running) {
                 moveRight(675);
+                if (frameCount > 12){
+                    stopAnimation();
+                }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -158,7 +207,7 @@ public class Hero extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         BufferedImage fullImage;
-
+        Image croppedImage;
         try {
             fullImage = ImageIO.read(Objects.requireNonNull(
                     getClass().getResource(path)
@@ -172,10 +221,9 @@ public class Hero extends JPanel {
             throw new RuntimeException("❌ Ошибка загрузки/обрезки изображения: " + e.getMessage());
         }
 
-        int drawX = (getWidth() - croppedImage.getWidth(null)) / 2;
         int drawY = (getHeight() - croppedImage.getHeight(null)) / 2;
 
-            g.drawImage(croppedImage, posX, drawY, null);
-
+        g.drawImage(croppedImage, 0, drawY, null);
     }
+
 }
