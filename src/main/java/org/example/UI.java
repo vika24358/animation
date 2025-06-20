@@ -1,27 +1,30 @@
 package org.example;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 
 public class UI extends JFrame implements KeyListener {
     Hero hero = new Hero();
     Zombie zombie = new Zombie();
-    JPanel container = new JPanel(null);
+    BackgroundPanel container;
+
     public UI() {
         setTitle("Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
 
-
+        container = new BackgroundPanel("/Backgrounds/1.png");
+        container.setLayout(null);
         container.setPreferredSize(getSize());
 
-        // Размеры компонентов должны быть достаточными для рисования
         hero.setBounds(100, 400, 90, 150);
         zombie.setBounds(500, 400, 200, 150);
 
-        // Важное: чтобы панели не перекрывались белым фоном
         hero.setOpaque(false);
         zombie.setOpaque(false);
 
@@ -36,6 +39,11 @@ public class UI extends JFrame implements KeyListener {
 
         hero.idle();
         zombie.idle();
+
+        JButton settingsButton = new JButton("Settings");
+        settingsButton.addActionListener(e -> new Settings(this));
+        container.add(settingsButton);
+        settingsButton.setBounds(650, 10, 100, 30);
 
         setVisible(true);
     }
@@ -79,26 +87,29 @@ public class UI extends JFrame implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (hero.movingOnScreen){
+        if (hero.movingOnScreen) {
             hero.idle();
         }
-
     }
 
-    private void moveHeroRight() {
-        int newX = hero.getX() + 10;
-        if (newX + hero.getWidth() <= getWidth()) {
-            hero.setLocation(newX, hero.getY());
+    // Класс панели с фоном
+    static class BackgroundPanel extends JPanel {
+        public Image backgroundImage;
+
+        public BackgroundPanel(String path) {
+            try {
+                backgroundImage = ImageIO.read(getClass().getResource(path));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        hero.walk();
-    }
 
-    private void moveHeroLeft() {
-        int newX = hero.getX() - 10;
-        if (newX >= 0) {
-            hero.setLocation(newX, hero.getY());
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (backgroundImage != null) {
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
         }
-        hero.walkLeft();
     }
-
 }
